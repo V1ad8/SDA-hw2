@@ -7,13 +7,13 @@ CACHE=lru_cache
 UTILS=utils
 
 # Add new source file names here:
-# EXTRA=<extra source file name>
+EXTRA=add/*.c
 
 .PHONY: build clean
 
 build: tema2
 
-tema2: main.o $(LOAD).o $(SERVER).o $(CACHE).o $(UTILS).o # $(EXTRA).o
+tema2: main.o $(LOAD).o $(SERVER).o $(CACHE).o $(UTILS).o $(EXTRA)
 	$(CC) $^ -o $@
 
 main.o: main.c

@@ -9,28 +9,29 @@
 #include "constants.h"
 #include "lru_cache.h"
 
-#define TASK_QUEUE_SIZE         1000
-#define MAX_LOG_LENGTH          1000
-#define MAX_RESPONSE_LENGTH     4096
+#include "add/linked_list.h"
+
+#define TASK_QUEUE_SIZE 1000
+#define MAX_LOG_LENGTH 1000
+#define MAX_RESPONSE_LENGTH 4096
 
 typedef struct server {
-    lru_cache *cache;
-
-    /* TODO: add needed fields */
+	lru_cache *cache;
+	linked_list_t *task_queue;
+	int server_id;
 } server;
 
 typedef struct request {
-    request_type type;
-    char *doc_name;
-    char *doc_content;
+	request_type type;
+	char *doc_name;
+	char *doc_content;
 } request;
 
 typedef struct response {
-    char *server_log;
-    char *server_response;
-    int server_id;
+	char *server_log;
+	char *server_response;
+	int server_id;
 } response;
-
 
 server *init_server(unsigned int cache_size);
 
@@ -58,4 +59,4 @@ void free_server(server **s);
  */
 response *server_handle_request(server *s, request *req);
 
-#endif  /* SERVER_H */
+#endif /* SERVER_H */
