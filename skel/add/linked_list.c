@@ -19,12 +19,20 @@ ll_node_t *ll_get_nth_node(ll_list_t *list, unsigned int n)
 {
 	unsigned int len = list->size - 1;
 	unsigned int i;
-	ll_node_t *node = list->head;
+	ll_node_t *node;
 
-	n = MIN(n, len);
+	if (n > len)
+		return NULL;
 
-	for (i = 0; i < n; ++i)
-		node = node->next;
+	if (n <= len / 2) {
+		node = list->head;
+		for (i = 0; i < n; ++i)
+			node = node->next;
+	} else {
+		node = list->tail;
+		for (i = len; i > n; --i)
+			node = node->prev;
+	}
 
 	return node;
 }
@@ -42,25 +50,41 @@ ll_node_t *ll_create_node(const void *new_data, unsigned int data_size)
 	return node;
 }
 
-void ll_add_nth_node(ll_list_t *list, unsigned int n, const void *new_data)
+ll_node_t *ll_add_nth_node(ll_list_t *list, unsigned int n,
+							 const void *new_data)
 {
 	ll_node_t *new_node, *prev_node;
 
 	if (!list)
-		return;
+		return NULL;
+
+	if (n > list->size)
+		return NULL;
 
 	new_node = ll_create_node(new_data, list->data_size);
 
-	if (!n || !list->size) {
+	if (n == 0) {
 		new_node->next = list->head;
+		if (list->head)
+			list->head->prev = new_node;
 		list->head = new_node;
+		if (!list->tail)
+			list->tail = new_node;
+	} else if (n == list->size) {
+		new_node->prev = list->tail;
+		list->tail->next = new_node;
+		list->tail = new_node;
 	} else {
 		prev_node = ll_get_nth_node(list, n - 1);
+		new_node->prev = prev_node;
 		new_node->next = prev_node->next;
+		prev_node->next->prev = new_node;
 		prev_node->next = new_node;
 	}
 
 	++list->size;
+
+	return new_node;
 }
 
 ll_node_t *ll_remove_nth_node(ll_list_t *list, unsigned int n)
@@ -70,20 +94,88 @@ ll_node_t *ll_remove_nth_node(ll_list_t *list, unsigned int n)
 	if (!list || !list->size)
 		return NULL;
 
-	if (!n) {
+	if (n >= list->size)
+		return NULL;
+
+	if (n == 0) {
 		removed_node = list->head;
 		list->head = removed_node->next;
-		removed_node->next = NULL;
+		if (list->head)
+			list->head->prev = NULL;
+		if (removed_node == list->tail)
+			list->tail = NULL;
+	} else if (n == list->size - 1) {
+		removed_node = list->tail;
+		list->tail = removed_node->prev;
+		list->tail->next = NULL;
 	} else {
 		prev_node = ll_get_nth_node(list, n - 1);
 		removed_node = prev_node->next;
 		prev_node->next = removed_node->next;
-		removed_node->next = NULL;
+		prev_node->next->prev = prev_node;
 	}
 
 	--list->size;
 
 	return removed_node;
+}
+
+ll_node_t *move_node_to_end(ll_list_t *list, void *data)
+{
+	ll_node_t *node;
+
+	for (node = list->head; node; node = node->next) {
+		if (memcmp(node->data, data, list->data_size) == 0) {
+			ll_node_t *prev = node->prev;
+			ll_node_t *next = node->next;
+			if (prev) {
+				prev->next = next;
+			} else {
+				list->head = next;
+			}
+			if (next) {
+				next->prev = prev;
+			} else {
+				list->tail = prev;
+			}
+			list->size--;
+			break;
+		}
+	}
+
+	if (!node)
+		return NULL;
+
+	ll_node_t *new_node = ll_add_nth_node(list, list->size, node->data);
+	free(node);
+
+	return new_node;
+}
+
+ll_node_t* ll_remove_node(ll_list_t *list, ll_node_t *node)
+{
+	if (!list || !node)
+		return NULL;
+
+	if (node == list->head) {
+		list->head = node->next;
+		if (list->head)
+			list->head->prev = NULL;
+	} else {
+		node->prev->next = node->next;
+	}
+
+	if (node == list->tail) {
+		list->tail = node->prev;
+		if (list->tail)
+			list->tail->next = NULL;
+	} else {
+		node->next->prev = node->prev;
+	}
+
+	list->size--;
+
+	return node;
 }
 
 unsigned int ll_get_size(ll_list_t *list)

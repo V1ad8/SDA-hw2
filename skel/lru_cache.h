@@ -6,7 +6,7 @@
 #define LRU_CACHE_H
 
 #include <stdbool.h>
-#include "add/doubly_linked_list.h"
+#include "add/linked_list.h"
 #include "add/hashtable.h"
 
 typedef struct doc_t {
@@ -15,7 +15,7 @@ typedef struct doc_t {
 } doc_t;
 
 typedef struct lru_cache {
-	dll_list_t *order;
+	ll_list_t *order;
 	hashtable_t *ht;
 } lru_cache;
 
