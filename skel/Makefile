@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -Wextra
+CFLAGS=-Wall -Wextra -g
 
 LOAD=load_balancer
 SERVER=server
@@ -14,7 +14,7 @@ EXTRA=add/*.c
 build: tema2
 
 tema2: main.o $(LOAD).o $(SERVER).o $(CACHE).o $(UTILS).o $(EXTRA)
-	$(CC) $^ -o $@
+	$(CC) $^ -g -o $@
 
 main.o: main.c
 	$(CC) $(CFLAGS) $^ -c

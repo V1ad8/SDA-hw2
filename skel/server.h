@@ -9,16 +9,14 @@
 #include "constants.h"
 #include "lru_cache.h"
 
-#include "add/linked_list.h"
-
 #define TASK_QUEUE_SIZE 1000
 #define MAX_LOG_LENGTH 1000
 #define MAX_RESPONSE_LENGTH 4096
 
 typedef struct server {
 	lru_cache *cache;
-	linked_list_t *task_queue;
-	int server_id;
+
+	/* TODO: add needed fields */
 } server;
 
 typedef struct request {

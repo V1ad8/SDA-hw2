@@ -1,3 +1,4 @@
+
 /*
  * Copyright (c) 2024, <>
  */
@@ -23,14 +24,8 @@ static response *server_get_document(server *s, char *doc_name)
 
 server *init_server(unsigned int cache_size)
 {
-	server *s = malloc(sizeof(server *));
-	DIE(!s, "malloc server");
-
-	s->cache = init_lru_cache(cache_size);
-	s->task_queue = ll_create(sizeof(request *));
-	s->server_id = 0;
-
-	return s;
+	/* TODO */
+	return NULL;
 }
 
 response *server_handle_request(server *s, request *req)

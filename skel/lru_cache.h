@@ -6,9 +6,17 @@
 #define LRU_CACHE_H
 
 #include <stdbool.h>
+#include "add/doubly_linked_list.h"
+#include "add/hashtable.h"
+
+typedef struct doc_t {
+	char *doc_name;
+	char *doc_content;
+} doc_t;
 
 typedef struct lru_cache {
-    /* TODO */
+	dll_list_t *order;
+	hashtable_t *ht;
 } lru_cache;
 
 lru_cache *init_lru_cache(unsigned int cache_capacity);
@@ -30,7 +38,7 @@ void free_lru_cache(lru_cache **cache);
  *      false if the key already existed.
  */
 bool lru_cache_put(lru_cache *cache, void *key, void *value,
-                   void **evicted_key);
+				   void **evicted_key);
 
 /**
  * lru_cache_get() - Retrieves the value associated with a key.
