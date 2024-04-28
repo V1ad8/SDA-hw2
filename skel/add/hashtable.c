@@ -1,6 +1,5 @@
 #include "hashtable.h"
 #include "../utils.h"
-#include <stdio.h>
 
 hashtable_t *ht_create(unsigned int hmax, unsigned int (*hash_function)(void *),
 					   int (*compare_function)(void *, void *))
@@ -77,6 +76,7 @@ void ht_put(hashtable_t *ht, void *key, unsigned int key_size, void *value,
 
 	if (ht_has_key(ht, key) == 1) {
 		ll_node_t *node = ht->buckets[hash_index]->head;
+
 		while (node != NULL) {
 			info_t *data_info = node->data;
 

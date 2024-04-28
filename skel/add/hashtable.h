@@ -1,5 +1,3 @@
-// add a header guard
-
 #ifndef ADD_HASHTABLE_H
 #define ADD_HASHTABLE_H
 
@@ -12,11 +10,6 @@ typedef struct hashtable_t {
 	unsigned int (*hash_function)(void *);
 	int (*compare_function)(void *, void *);
 } hashtable_t;
-
-typedef struct info_t {
-	void *key;
-	void *value;
-} info_t;
 
 hashtable_t *ht_create(unsigned int hmax, unsigned int (*hash_function)(void *),
 					   int (*compare_function)(void *, void *));

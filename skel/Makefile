@@ -31,8 +31,8 @@ $(CACHE).o: $(CACHE).c $(CACHE).h
 $(UTILS).o: $(UTILS).c $(UTILS).h
 	$(CC) $(CFLAGS) $^ -c
 
-# $(EXTRA).o: $(EXTRA).c $(EXTRA).h
-# 	$(CC) $(CFLAGS) $^ -c
+$(EXTRA).o: $(EXTRA).c $(EXTRA).h
+	$(CC) $(CFLAGS) $^ -c
 
 clean:
 	rm -f *.o tema2 *.h.gch
