@@ -34,6 +34,8 @@ typedef struct response {
 
 server *init_server(unsigned int cache_size);
 
+void execute_queue(server *s);
+
 /**
  * @brief Should deallocate completely the memory used by server,
  *     taking care of deallocating the elements in the queue, if any,

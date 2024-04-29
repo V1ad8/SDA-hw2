@@ -15,10 +15,12 @@ typedef struct load_balancer {
 
     /* TODO: remove test_server after testing
      *       the functionality for a single server */
-    server *test_server;
+    // server *test_server;
 
     /* TODO: add fields needed for a hashring with
              multiple servers */
+    ll_list_t *servers;
+    bool enable_vnodes;
 } load_balancer;
 
 

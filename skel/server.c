@@ -163,6 +163,29 @@ server *init_server(unsigned int cache_size)
 	return s;
 }
 
+void execute_queue(server *s)
+{
+	// Check if the server is valid
+	if (!s)
+		return;
+
+	// Execute all the tasks in the queue
+	while (!q_is_empty(s->tasks)) {
+		// Get the first task from the queue
+		request *task = (request *)q_front(s->tasks);
+
+		// Execute the task and get the corresponding response
+		response *res =
+			server_edit_document(s, task->doc_name, task->doc_content);
+
+		// Print the response
+		PRINT_RESPONSE(res);
+
+		// Remove the task from the queue
+		q_dequeue_request(s->tasks);
+	}
+}
+
 response *server_handle_request(server *s, request *req)
 {
 	// Check if the server and request are valid
@@ -200,20 +223,7 @@ response *server_handle_request(server *s, request *req)
 	// Handle the get document request
 
 	// Execute all the tasks in the queue
-	while (!q_is_empty(s->tasks)) {
-		// Get the first task from the queue
-		request *task = (request *)q_front(s->tasks);
-
-		// Execute the task and get the corresponding response
-		response *res =
-			server_edit_document(s, task->doc_name, task->doc_content);
-
-		// Print the response
-		PRINT_RESPONSE(res);
-
-		// Remove the task from the queue
-		q_dequeue_request(s->tasks);
-	}
+	execute_queue(s);
 
 	// Edit the document and return the response
 	return server_get_document(s, req->doc_name);
@@ -229,8 +239,4 @@ void free_server(server **s)
 	free_lru_cache(&(*s)->cache);
 	q_free_request((*s)->tasks);
 	ht_free((*s)->db);
-
-	// Free the server
-	free(*s);
-	*s = NULL;
 }
