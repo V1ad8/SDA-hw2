@@ -94,7 +94,9 @@ void *lru_cache_get(lru_cache *cache, void *key)
 	char *value = strdup(((info_t *)node->data)->value);
 
 	// Move the node to the end of the linked list to mark it as most recently used
-	move_node_to_end(cache->order, key);
+	ht_remove_entry(cache->ht, key);
+	ll_node_t *new_node = move_node_to_end(cache->order, key);
+	ht_put(cache->ht, key, strlen(key) + 1, new_node, sizeof(new_node));
 
 	return value;
 }
