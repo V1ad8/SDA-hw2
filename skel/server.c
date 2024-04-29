@@ -92,10 +92,10 @@ static response *server_get_document(server *s, char *doc_name)
 	void *evicted_key = NULL;
 	bool full = lru_cache_is_full(s->cache);
 
-	char *doc_content = lru_cache_get(s->cache, doc_name);
+	char *doc_content = strdup(ht_get(s->db, doc_name));
 
 	strcpy(res->server_response, doc_content);
-	lru_cache_put(s->cache, doc_name, res->server_response, &evicted_key);
+	lru_cache_put(s->cache, doc_name, doc_content, &evicted_key);
 
 	free(doc_content);
 
@@ -105,6 +105,7 @@ static response *server_get_document(server *s, char *doc_name)
 		sprintf(res->server_log, LOG_MISS, doc_name);
 	}
 
+	free(evicted_key);
 	return res;
 }
 

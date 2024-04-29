@@ -43,6 +43,7 @@ void free_lru_cache(lru_cache **cache)
 bool lru_cache_put(lru_cache *cache, void *key, void *value, void **evicted_key)
 {
 	if (ht_has_key(cache->ht, key)) {
+		// Update existing key's value and move it to the end of the linked list
 		ll_node_t *node = move_node_to_end(cache->order, key);
 
 		free(((info_t *)node->data)->value);
@@ -58,21 +59,27 @@ bool lru_cache_put(lru_cache *cache, void *key, void *value, void **evicted_key)
 		*evicted_key = strdup(((info_t *)node->data)->key);
 		ht_remove_entry(cache->ht, *evicted_key);
 
+		free(((info_t *)node->data)->key);
+		free(((info_t *)node->data)->value);
 		free(node->data);
 		free(node);
 	}
 
+	// Create a new info_t struct to store the key-value pair
 	info_t *info = malloc(sizeof(info_t));
 	info->key = strdup(key);
 	info->value = strdup(value);
 
+	// Add the new node to the end of the linked list
 	ll_node_t *node =
 		ll_add_nth_node_info(cache->order, cache->order->size, info);
 
+	// Free the temporary key and value strings
 	free(info->key);
 	free(info->value);
 	free(info);
 
+	// Add the key-value pair to the hashtable
 	ht_put(cache->ht, key, strlen(key) + 1, node, sizeof(node));
 	return true;
 }
@@ -82,9 +89,11 @@ void *lru_cache_get(lru_cache *cache, void *key)
 	if (!ht_has_key(cache->ht, key))
 		return NULL;
 
+	// Get the node corresponding to the key from the hashtable
 	ll_node_t *node = ht_get(cache->ht, key);
 	char *value = strdup(((info_t *)node->data)->value);
 
+	// Move the node to the end of the linked list to mark it as most recently used
 	move_node_to_end(cache->order, key);
 
 	return value;
@@ -95,7 +104,10 @@ void lru_cache_remove(lru_cache *cache, void *key)
 	if (!ht_has_key(cache->ht, key))
 		return;
 
+	// Get the node corresponding to the key from the hashtable
 	ll_node_t *node = ht_get(cache->ht, key);
+
+	// Remove the node from the linked list and the key from the hashtable
 	ll_remove_node(cache->order, node);
 	ht_remove_entry(cache->ht, key);
 }
