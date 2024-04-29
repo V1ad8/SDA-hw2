@@ -5,12 +5,9 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#include "utils.h"
 #include "constants.h"
 #include "lru_cache.h"
-
 #include "add/queue.h"
-#include "add/hashtable.h"
 
 #define TASK_QUEUE_SIZE 1000
 #define MAX_LOG_LENGTH 1000

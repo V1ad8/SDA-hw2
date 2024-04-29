@@ -6,7 +6,7 @@
 #define LRU_CACHE_H
 
 #include <stdbool.h>
-#include "add/linked_list.h"
+#include "utils.h"
 #include "add/hashtable.h"
 
 typedef struct doc_t {
