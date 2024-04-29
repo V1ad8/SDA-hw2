@@ -157,9 +157,7 @@ server *init_server(unsigned int cache_size)
 	// Initialize the server's fields
 	s->cache = init_lru_cache(cache_size);
 	s->tasks = q_create(sizeof(request), TASK_QUEUE_SIZE);
-	s->db = ht_create(
-		cache_size * 2, hash_string,
-		compare_strings); // Allocate memory for the hashtable with the correct size
+	s->db = ht_create(cache_size * 2, hash_string, compare_strings);
 
 	// Return the server
 	return s;
