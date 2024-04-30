@@ -10,11 +10,10 @@ unsigned int get_server(load_balancer *main, unsigned int hash)
 	unsigned int slot = 0;
 
 	for (ll_node_t *curr = main->servers->head; curr; curr = curr->next) {
-		if (hash > main->hash_function_servers(&((server *)curr->data)->id)) {
-			slot++;
-		} else {
+		if (hash < main->hash_function_servers(&((server *)curr->data)->id))
 			return slot;
-		}
+
+		slot++;
 	}
 
 	return 0;
@@ -39,7 +38,12 @@ load_balancer *init_load_balancer(bool enable_vnodes)
 void loader_add_server(load_balancer *main, int server_id, int cache_size)
 {
 	unsigned int s_hash = main->hash_function_servers(&server_id);
-	unsigned int slot = ll_get_size(main->servers) - get_server(main, s_hash);
+	unsigned int slot = get_server(main, s_hash);
+
+	if (ll_get_size(main->servers))
+		if (s_hash > main->hash_function_servers(
+						 &((server *)main->servers->tail->data)->id))
+			slot = ll_get_size(main->servers) - slot;
 
 	server *s = init_server(cache_size);
 	s->id = server_id;
@@ -87,9 +91,7 @@ void loader_remove_server(load_balancer *main, int server_id)
 response *loader_forward_request(load_balancer *main, request *req)
 {
 	unsigned int hash = main->hash_function_docs(req->doc_name);
-
 	unsigned int slot = get_server(main, hash);
-
 	server *s = ll_get_nth_node(main->servers, slot)->data;
 
 	return server_handle_request(s, req);
