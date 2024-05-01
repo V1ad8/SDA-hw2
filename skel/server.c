@@ -239,4 +239,8 @@ void free_server(server **s)
 	free_lru_cache(&(*s)->cache);
 	q_free_request((*s)->tasks);
 	ht_free((*s)->db);
+
+	// Free the server
+	free(*s);
+	*s = NULL;
 }
