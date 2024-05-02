@@ -5,6 +5,15 @@
 
 #include "server.h"
 
+/**
+ * @brief Edits a document in the server's cache and database.
+ * 
+ * @param s: The server.
+ * @param doc_name: The name of the document.
+ * @param doc_content: The content of the document.
+ * 
+ * @return response*: The response from the server.
+ */
 static response *server_edit_document(server *s, char *doc_name,
 									  char *doc_content)
 {
@@ -70,6 +79,14 @@ static response *server_edit_document(server *s, char *doc_name,
 	return res;
 }
 
+/**
+ * @brief Gets a document from the server's cache or database.
+ * 
+ * @param s: The server.
+ * @param doc_name: The name of the document.
+ * 
+ * @return response*: The response from the server.
+ */
 static response *server_get_document(server *s, char *doc_name)
 {
 	// Check if the server and document name are valid

@@ -1,8 +1,4 @@
 #include "linked_list.h"
-#include "../utils.h"
-#include "hashtable.h"
-
-#define MIN(a, b) ((a) < (b) ? (a) : (b))
 
 ll_list_t *ll_create(unsigned int data_size)
 {
@@ -36,7 +32,7 @@ ll_node_t *ll_get_nth_node(ll_list_t *list, unsigned int n)
 	return node;
 }
 
-ll_node_t *ll_create_node(const void *new_data, unsigned int data_size)
+static ll_node_t *ll_create_node(const void *new_data, unsigned int data_size)
 {
 	ll_node_t *node = calloc(1, sizeof(*node));
 	DIE(!node, "calloc node");
@@ -61,49 +57,6 @@ ll_node_t *ll_add_nth_node(ll_list_t *list, unsigned int n,
 		return NULL;
 
 	new_node = ll_create_node(new_data, list->data_size);
-
-	if (n == 0) {
-		new_node->next = list->head;
-		if (list->head)
-			list->head->prev = new_node;
-		list->head = new_node;
-		if (!list->tail)
-			list->tail = new_node;
-	} else if (n == list->size) {
-		new_node->prev = list->tail;
-		list->tail->next = new_node;
-		list->tail = new_node;
-	} else {
-		prev_node = ll_get_nth_node(list, n - 1);
-		new_node->prev = prev_node;
-		new_node->next = prev_node->next;
-		prev_node->next->prev = new_node;
-		prev_node->next = new_node;
-	}
-
-	++list->size;
-
-	return new_node;
-}
-
-ll_node_t *ll_add_nth_node_info(ll_list_t *list, unsigned int n,
-								const info_t *new_data)
-{
-	ll_node_t *prev_node;
-
-	if (!list)
-		return NULL;
-
-	if (n > list->size)
-		return NULL;
-
-	ll_node_t *new_node = calloc(1, sizeof(*new_node));
-	DIE(!new_node, "calloc node");
-
-	new_node->data = malloc(sizeof(info_t));
-	DIE(!new_node->data, "malloc data");
-	((info_t *)new_node->data)->key = strdup(new_data->key);
-	((info_t *)new_node->data)->value = strdup(new_data->value);
 
 	if (n == 0) {
 		new_node->next = list->head;
@@ -162,43 +115,6 @@ ll_node_t *ll_remove_nth_node(ll_list_t *list, unsigned int n)
 	return removed_node;
 }
 
-ll_node_t *move_node_to_end(ll_list_t *list, void *key)
-{
-	ll_node_t *node;
-
-	for (node = list->head; node; node = node->next) {
-		if (strcmp(((info_t *)node->data)->key, key) == 0) {
-			ll_node_t *prev = node->prev;
-			ll_node_t *next = node->next;
-			if (prev) {
-				prev->next = next;
-			} else {
-				list->head = next;
-			}
-			if (next) {
-				next->prev = prev;
-			} else {
-				list->tail = prev;
-			}
-			list->size--;
-
-			break;
-		}
-	}
-
-	if (!node)
-		return NULL;
-
-	ll_node_t *new_node = ll_add_nth_node_info(list, list->size, node->data);
-
-	free(((info_t *)node->data)->key);
-	free(((info_t *)node->data)->value);
-	free(node->data);
-	free(node);
-
-	return new_node;
-}
-
 ll_node_t *ll_remove_node(ll_list_t *list, ll_node_t *node)
 {
 	if (!list || !node)
@@ -241,25 +157,6 @@ void ll_free(ll_list_t **pp_list)
 
 	while ((*pp_list)->size) {
 		node = ll_remove_nth_node(*pp_list, 0);
-		free(node->data);
-		free(node);
-	}
-
-	free(*pp_list);
-	*pp_list = NULL;
-}
-
-void ll_free_info(ll_list_t **pp_list)
-{
-	ll_node_t *node;
-
-	if (!pp_list || !*pp_list)
-		return;
-
-	while ((*pp_list)->size) {
-		node = ll_remove_nth_node(*pp_list, 0);
-		free(((info_t *)node->data)->key);
-		free(((info_t *)node->data)->value);
 		free(node->data);
 		free(node);
 	}

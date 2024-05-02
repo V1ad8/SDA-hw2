@@ -1,6 +1,8 @@
 #ifndef ADD_DOUBLY_LINKED_LIST_H
 #define ADD_DOUBLY_LINKED_LIST_H
 
+#include "../utils.h"
+
 typedef struct info_t {
 	void *key;
 	void *value;
@@ -20,8 +22,6 @@ typedef struct ll_list_t {
 ll_list_t *ll_create(unsigned int data_size);
 
 ll_node_t *ll_get_nth_node(ll_list_t *list, unsigned int n);
-
-ll_node_t *ll_create_node(const void *new_data, unsigned int data_size);
 
 ll_node_t *ll_add_nth_node(ll_list_t *list, unsigned int n,
 						   const void *new_data);

@@ -7,26 +7,41 @@
 
 #include "server.h"
 
-#define MAX_SERVERS             99999
+#define MAX_SERVERS 99999
 
 typedef struct load_balancer {
-    unsigned int (*hash_function_servers)(void *);
-    unsigned int (*hash_function_docs)(void *);
+	// Hash functions for servers and documents
+	unsigned int (*hash_function_servers)(void *);
+	unsigned int (*hash_function_docs)(void *);
 
-    /* TODO: remove test_server after testing
-     *       the functionality for a single server */
-    // server *test_server;
+	// List of servers
+	ll_list_t *servers;
 
-    /* TODO: add fields needed for a hashring with
-             multiple servers */
-    ll_list_t *servers;
-    bool enable_vnodes;
+	// Flag for virtual nodes
+	bool enable_vnodes;
 } load_balancer;
 
-
+/**
+ * init_load_balancer() - Initializes the load balancer.
+ * 
+ * @param enable_vnodes: Flag which enables the use of virtual nodes.
+ * 
+ * @return load_balancer* - The initialized load balancer.
+ * 
+ * @brief The load balancer will have the hash functions set to hash_uint
+ * and hash_string, the servers list initialized and the enable_vnodes flag
+ * set to the given value.
+ */
 load_balancer *init_load_balancer(bool enable_vnodes);
 
-void free_load_balancer(load_balancer** main);
+/**
+ * free_load_balancer() - Frees the memory allocated for the load balancer.
+ * 
+ * @param main: Load balancer to be freed.
+ * 
+ * @brief The function will free the memory allocated for the load balancer.
+ */
+void free_load_balancer(load_balancer **main);
 
 /**
  * loader_add_server() - Adds a new server to the system.
@@ -40,7 +55,7 @@ void free_load_balancer(load_balancer** main);
  * documents to the added server. Before distributing the documents, these
  * servers should execute all the tasks in their queues.
  */
-void loader_add_server(load_balancer* main, int server_id, int cache_size);
+void loader_add_server(load_balancer *main, int server_id, int cache_size);
 
 /**
  * loader_remove_server() Removes a server from the system.
@@ -55,7 +70,7 @@ void loader_add_server(load_balancer* main, int server_id, int cache_size);
  * Additionally, all the tasks stored in the removed server's queue
  * should be executed before moving the documents.
  */
-void loader_remove_server(load_balancer* main, int server_id);
+void loader_remove_server(load_balancer *main, int server_id);
 
 /**
  * loader_forward_request() - Forwards a request to the appropriate server.
@@ -72,7 +87,6 @@ void loader_remove_server(load_balancer* main, int server_id);
  * and should be freed either here, either in server_handle_request, after
  * using them.
  */
-response *loader_forward_request(load_balancer* main, request *req);
-
+response *loader_forward_request(load_balancer *main, request *req);
 
 #endif /* LOAD_BALANCER_H */

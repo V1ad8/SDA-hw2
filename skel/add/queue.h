@@ -1,6 +1,8 @@
 #ifndef ADD_QUEUE_H
 #define ADD_QUEUE_H
 
+#include "../utils.h"
+
 typedef struct queue_t {
 	unsigned int max_size;
 	unsigned int size;

@@ -9,20 +9,47 @@
 #include "utils.h"
 #include "add/hashtable.h"
 
-typedef struct doc_t {
-	char *doc_name;
-	char *doc_content;
-} doc_t;
-
 typedef struct lru_cache {
+	// List of keys in the order they were accessed
 	ll_list_t *order;
+
+	// Hashtable to store the key-value pairs
 	hashtable_t *ht;
 } lru_cache;
 
+/*
+ * init_lru_cache() - Initializes the LRU cache.
+ * 
+ * @param cache_capacity: The maximum number of key-value pairs that the cache can store.
+ * 
+ * @return lru_cache* - The initialized LRU cache.
+ * 
+ * @brief The function will allocate memory for the cache, initialize the hashtable
+ * and the linked list used to store the key-value pairs.
+ 
+*/
 lru_cache *init_lru_cache(unsigned int cache_capacity);
 
+/*
+ * lru_cache_is_full() - Checks if the cache is full.
+ * 
+ * @param cache: The cache to be checked.
+ * 
+ * @return bool - True if the cache is full, false otherwise.
+ * 
+ * @brief The function will return true if the cache is full, meaning that the
+ * number of key-value pairs stored in the cache is equal to the cache's capacity.
+ */
 bool lru_cache_is_full(lru_cache *cache);
 
+/*
+ * free_lru_cache() - Frees the memory allocated for the cache.
+ * 
+ * @param cache: The cache to be freed.
+ * 
+ * @brief The function will free the memory allocated for the cache, the hashtable
+ * and the linked list used to store the key-value pairs.
+ */
 void free_lru_cache(lru_cache **cache);
 
 /**

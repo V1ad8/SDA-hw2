@@ -1,5 +1,4 @@
 #include "queue.h"
-#include "../utils.h"
 #include "../server.h"
 
 queue_t *q_create(unsigned int data_size, unsigned int max_size)
@@ -43,43 +42,6 @@ int q_dequeue(queue_t *q)
 
 	q->read_idx = (q->read_idx + 1) % q->max_size;
 	--q->size;
-	return 1;
-}
-
-int q_dequeue_request(queue_t *q)
-{
-	if (!q || !q->size)
-		return 0;
-
-	free(((request *)q->buff[q->read_idx])->doc_name);
-	free(((request *)q->buff[q->read_idx])->doc_content);
-	free(q->buff[q->read_idx]);
-
-	q->read_idx = (q->read_idx + 1) % q->max_size;
-	--q->size;
-	return 1;
-}
-
-int q_enqueue_request(queue_t *q, void *req)
-{
-	if (!q || q->size == q->max_size)
-		return 0;
-
-	request *new_req = malloc(sizeof(*new_req));
-	DIE(!new_req, "malloc request failed");
-
-	new_req->doc_name = strdup(((request *)req)->doc_name);
-	DIE(!new_req->doc_name, "strdup doc_name failed");
-
-	new_req->doc_content = strdup(((request *)req)->doc_content);
-	DIE(!new_req->doc_content, "strdup doc_content failed");
-
-	new_req->type = ((request *)req)->type;
-
-	q->buff[q->write_idx] = (void *)new_req;
-	q->write_idx = (q->write_idx + 1) % q->max_size;
-	++q->size;
-
 	return 1;
 }
 

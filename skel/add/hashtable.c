@@ -1,5 +1,4 @@
 #include "hashtable.h"
-#include "../utils.h"
 
 hashtable_t *ht_create(unsigned int hmax, unsigned int (*hash_function)(void *),
 					   int (*compare_function)(void *, void *))

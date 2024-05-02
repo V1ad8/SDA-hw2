@@ -2,6 +2,7 @@
 #define ADD_HASHTABLE_H
 
 #include "linked_list.h"
+#include "../utils.h"
 
 typedef struct hashtable_t {
 	ll_list_t **buckets;
