@@ -97,7 +97,9 @@ void loader_add_server(load_balancer *main, int server_id, int cache_size)
 
 			// Check if the key should be moved to the current server
 			// Special case: if the next server is the first one and the key is before 0 on the ring
-			if (hash < s_hash) {
+			if (hash < s_hash ||
+				(next_s == main->servers->head->data &&
+				 hash > main->hash_function_servers(&next_s->id))) {
 				// Add the key to the current server
 				ht_put(s->db, ((info_t *)curr->data)->key,
 					   strlen(((info_t *)curr->data)->key) + 1,
@@ -174,7 +176,7 @@ void print_servers(load_balancer *main)
 		for (unsigned int b = 0; b < s->db->hmax; b++) {
 			for (ll_node_t *curr = s->db->buckets[b]->head; curr;
 				 curr = curr->next) {
-				printf("\t%s - %x ; from bucket %x\n",
+				printf("\t%32s - %x ; from bucket %x\n",
 					   (char *)((info_t *)curr->data)->key,
 					   main->hash_function_docs(((info_t *)curr->data)->key),
 					   main->hash_function_docs(((info_t *)curr->data)->key) %
