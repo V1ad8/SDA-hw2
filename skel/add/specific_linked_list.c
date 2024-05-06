@@ -120,3 +120,19 @@ void ll_free_info(ll_list_t **pp_list)
 	free(*pp_list);
 	*pp_list = NULL;
 }
+
+ll_node_t *ll_get_node(ll_list_t *list, void *key)
+{
+	// Declare a node to iterate through the list
+	ll_node_t *node;
+
+	// Find the node with the given key
+	for (node = list->head; node; node = node->next) {
+		if (strcmp(((info_t *)node->data)->key, key) == 0) {
+			return node;
+		}
+	}
+
+	// If the node was not found, return NULL
+	return NULL;
+}

@@ -125,8 +125,7 @@ ll_node_t *ll_remove_node(ll_list_t *list, ll_node_t *node)
 		if (list->head)
 			list->head->prev = NULL;
 	} else {
-		if (node->prev)
-			node->prev->next = node->next;
+		node->prev->next = node->next;
 	}
 
 	if (node == list->tail) {
@@ -134,8 +133,7 @@ ll_node_t *ll_remove_node(ll_list_t *list, ll_node_t *node)
 		if (list->tail)
 			list->tail->next = NULL;
 	} else {
-		if (node->next)
-			node->next->prev = node->prev;
+		node->next->prev = node->prev;
 	}
 
 	list->size--;

@@ -96,7 +96,10 @@ void loader_add_server(load_balancer *main, int server_id, int cache_size)
 				main->hash_function_docs(((info_t *)curr->data)->key);
 
 			// Check if the key should be moved to the current server
-			if (hash < s_hash) {
+			// Special case: if the next server is the first one and the key is before 0 on the ring
+			if (hash < s_hash ||
+				(next_s == main->servers->head->data &&
+				 hash >= main->hash_function_servers(&next_s->id))) {
 				// Add the key to the current server
 				ht_put(s->db, ((info_t *)curr->data)->key,
 					   strlen(((info_t *)curr->data)->key) + 1,
@@ -104,7 +107,8 @@ void loader_add_server(load_balancer *main, int server_id, int cache_size)
 					   strlen(((info_t *)curr->data)->value) + 1);
 
 				// Remove the key from the next server's cache and database
-				lru_cache_remove(next_s->cache, ((info_t *)curr->data)->key);
+				lru_cache_remove(next_s->cache,
+								 ((info_t *)curr->data)->key);
 				ht_remove_entry(next_s->db, ((info_t *)curr->data)->key);
 
 				// Start from the beginning of the list again
@@ -173,7 +177,7 @@ void print_servers(load_balancer *main)
 		for (unsigned int b = 0; b < s->db->hmax; b++) {
 			for (ll_node_t *curr = s->db->buckets[b]->head; curr;
 				 curr = curr->next) {
-				printf("\t%s - %x\n", ((info_t *)curr->data)->key,
+				printf("\t%s - %x\n", (char *)((info_t *)curr->data)->key,
 					   main->hash_function_docs(((info_t *)curr->data)->key));
 			}
 		}

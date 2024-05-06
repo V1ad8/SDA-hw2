@@ -10,4 +10,6 @@ ll_node_t *move_node_to_end(ll_list_t *list, void *key);
 
 void ll_free_info(ll_list_t **pp_list);
 
+ll_node_t *ll_get_node(ll_list_t *list, void *key);
+
 #endif /* SPECIFIC_LINKED_LIST_H */

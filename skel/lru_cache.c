@@ -139,16 +139,18 @@ void lru_cache_remove(lru_cache *cache, void *key)
 	if (!ht_has_key(cache->ht, key))
 		return;
 
-	// Get the node corresponding to the key from the hashtable
-	ll_node_t *node = ht_get(cache->ht, key);
+	// Remove the key from the linked list
+	ll_node_t *node = ll_get_node(cache->order, key);
+	ll_remove_node(cache->order, node);
 
-	// Remove the key-value pair from the hashtable
+	// Remove the key from the hashtable
 	ht_remove_entry(cache->ht, key);
 
-	// Remove the node from the linked list and free the memory
-	ll_remove_node(cache->order, node);
+	// Free the memory allocated for the key and value
 	free(((info_t *)node->data)->key);
 	free(((info_t *)node->data)->value);
+
+	// Free the memory allocated for the node
 	free(node->data);
 	free(node);
 }

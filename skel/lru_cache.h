@@ -8,6 +8,7 @@
 #include <stdbool.h>
 #include "utils.h"
 #include "add/hashtable.h"
+#include "add/specific_linked_list.h"
 
 typedef struct lru_cache {
 	// List of keys in the order they were accessed
