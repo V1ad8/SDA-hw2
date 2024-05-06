@@ -97,9 +97,7 @@ void loader_add_server(load_balancer *main, int server_id, int cache_size)
 
 			// Check if the key should be moved to the current server
 			// Special case: if the next server is the first one and the key is before 0 on the ring
-			if (hash < s_hash ||
-				(next_s == main->servers->head->data &&
-				 hash >= main->hash_function_servers(&next_s->id))) {
+			if (hash < s_hash) {
 				// Add the key to the current server
 				ht_put(s->db, ((info_t *)curr->data)->key,
 					   strlen(((info_t *)curr->data)->key) + 1,
@@ -107,12 +105,11 @@ void loader_add_server(load_balancer *main, int server_id, int cache_size)
 					   strlen(((info_t *)curr->data)->value) + 1);
 
 				// Remove the key from the next server's cache and database
-				lru_cache_remove(next_s->cache,
-								 ((info_t *)curr->data)->key);
+				lru_cache_remove(next_s->cache, ((info_t *)curr->data)->key);
 				ht_remove_entry(next_s->db, ((info_t *)curr->data)->key);
 
 				// Start from the beginning of the list again
-				curr = next_s->db->buckets[b]->head;
+				curr = next_s->db->buckets[b--]->head;
 				break;
 			}
 
@@ -171,14 +168,17 @@ void print_servers(load_balancer *main)
 	for (ll_node_t *curr = main->servers->head; curr; curr = curr->next) {
 		server *s = curr->data;
 
-		printf("Server %d\t\t\t\t\t\t - %x\n", s->id,
+		printf("Server %5d\t\t\t\t\t\t - %x\n", s->id,
 			   main->hash_function_servers(&s->id));
 
 		for (unsigned int b = 0; b < s->db->hmax; b++) {
 			for (ll_node_t *curr = s->db->buckets[b]->head; curr;
 				 curr = curr->next) {
-				printf("\t%s - %x\n", (char *)((info_t *)curr->data)->key,
-					   main->hash_function_docs(((info_t *)curr->data)->key));
+				printf("\t%s - %x ; from bucket %x\n",
+					   (char *)((info_t *)curr->data)->key,
+					   main->hash_function_docs(((info_t *)curr->data)->key),
+					   main->hash_function_docs(((info_t *)curr->data)->key) %
+						   s->db->hmax);
 			}
 		}
 	}
@@ -186,6 +186,8 @@ void print_servers(load_balancer *main)
 
 response *loader_forward_request(load_balancer *main, request *req)
 {
+	// print_servers(main);
+
 	// Get the hash of the document and the slot where it should be placed
 	unsigned int hash = main->hash_function_docs(req->doc_name);
 	unsigned int slot = get_server(main, hash);
