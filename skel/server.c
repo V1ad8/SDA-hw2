@@ -1,6 +1,6 @@
 
 /*
- * Copyright (c) 2024, <>
+ * Copyright (c) 2024, <Ungureanu Vlad-Marin> <<2004uvm@gmail.com>>
  */
 
 #include "server.h"
@@ -219,7 +219,7 @@ response *server_handle_request(server *s, request *req)
 	}
 
 	// Handle the edit document request
-	
+
 	// Add the request to the server's task queue
 	q_enqueue_request(s->tasks, (void *)req);
 

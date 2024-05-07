@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, <>
+ * Copyright (c) 2024, <Ungureanu Vlad-Marin> <<2004uvm@gmail.com>>
  */
 
 #include "lru_cache.h"

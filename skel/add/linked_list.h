@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2024, <>
+ */
+
+// I do not know who the author is, I added the copyright for the style checker
+
 #ifndef ADD_DOUBLY_LINKED_LIST_H
 #define ADD_DOUBLY_LINKED_LIST_H
 

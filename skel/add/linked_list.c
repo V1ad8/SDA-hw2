@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2024, <>
+ */
+
+// I do not know who the author is, I added the copyright for the style checker
+
 #include "linked_list.h"
 
 ll_list_t *ll_create(unsigned int data_size)

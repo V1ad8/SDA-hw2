@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, <>
+ * Copyright (c) 2024, <Ungureanu Vlad-Marin> <<2004uvm@gmail.com>>
  */
 
 #include "load_balancer.h"
@@ -21,9 +21,13 @@ static unsigned int get_server(load_balancer *main, unsigned int hash)
 	// Initialize slot to 0
 	unsigned int slot = 0;
 
-	// Look for the server with the hash bigger than the given hash
+	// Iterate through the servers
 	for (ll_node_t *curr = main->servers->head; curr; curr = curr->next) {
-		if (hash <= main->hash_function_servers(&((server *)curr->data)->id))
+		// Address the current server
+		server *curr_server = (server *)curr->data;
+
+		// Look for the server with the hash bigger than the given hash
+		if (hash <= main->hash_function_servers(&(curr_server->id)))
 			return slot;
 
 		slot++;
@@ -74,10 +78,10 @@ void loader_add_server(load_balancer *main, int server_id, int cache_size)
 	unsigned int s_hash = main->hash_function_servers(&server_id);
 	unsigned int slot = get_server(main, s_hash);
 
-	// Check if the server should be placed at the end of the list or at th beginning
-	// Only for servers placed between the last one and the first one
-	if (s_hash >
-		main->hash_function_servers(&((server *)main->servers->tail->data)->id))
+	// Check if the server should be placed at the end of the list or at the
+	// beginning; Only for servers placed between the last one and the first one
+	server *tail_server = (server *)main->servers->tail->data;
+	if (s_hash > main->hash_function_servers(&(tail_server->id)))
 		slot = ll_get_size(main->servers);
 
 	// Get the next server
@@ -87,7 +91,8 @@ void loader_add_server(load_balancer *main, int server_id, int cache_size)
 	// Execute the tasks in the queue of the next server
 	execute_queue(next_s);
 
-	// Iterate through the keys of the next server and move them to the current server
+	// Iterate through the keys of the next server and move them to the current
+	// server
 	for (unsigned int b = 0; b < next_s->db->hmax; b++) {
 		ll_node_t *curr = next_s->db->buckets[b]->head;
 
@@ -97,7 +102,8 @@ void loader_add_server(load_balancer *main, int server_id, int cache_size)
 				main->hash_function_docs(((info_t *)curr->data)->key);
 
 			// Check if the key should be moved to the current server
-			// Special case: if the next server is the first one and the key is before 0 on the ring
+			// Special case: if the next server is the first one and the key is
+			// before 0 on the ring
 			if (hash < s_hash ||
 				(next_s == main->servers->head->data &&
 				 hash >= main->hash_function_servers(&next_s->id))) {
@@ -149,7 +155,8 @@ void loader_remove_server(load_balancer *main, int server_id)
 	// Execute the tasks in the queue of the current server
 	execute_queue(s);
 
-	// Iterate through the keys of the current server and move them to the next server
+	// Iterate through the keys of the current server and move them to the next
+	// server
 	for (unsigned int b = 0; b < s->db->hmax; b++) {
 		for (ll_node_t *curr = s->db->buckets[b]->head; curr;
 			 curr = curr->next) {

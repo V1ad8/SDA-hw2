@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2024, <>
+ */
+
+// I do not know who the author is, I added the copyright for the style checker
+
 #ifndef ADD_HASHTABLE_H
 #define ADD_HASHTABLE_H
 

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2024, <Ungureanu Vlad-Marin> <<2004uvm@gmail.com>>
+ */
+
 #include "specific_queue.h"
 
 int q_dequeue_request(queue_t *q)

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2024, <Ungureanu Vlad-Marin> <<2004uvm@gmail.com>>
+ */
+
 #include "specific_linked_list.h"
 
 ll_node_t *ll_add_nth_node_info(ll_list_t *list, unsigned int n,

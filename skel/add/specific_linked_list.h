@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2024, <Ungureanu Vlad-Marin> <<2004uvm@gmail.com>>
+ */
+
 #ifndef SPECIFIC_LINKED_LIST_H
 #define SPECIFIC_LINKED_LIST_H
 

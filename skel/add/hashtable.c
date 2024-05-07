@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2024, <>
+ */
+
+// I do not know who the author is, I added the copyright for the style checker
+
 #include "hashtable.h"
 
 hashtable_t *ht_create(unsigned int hmax, unsigned int (*hash_function)(void *),
