@@ -209,41 +209,41 @@ response *server_handle_request(server *s, request *req)
 	if (!s || !req || (req->type != GET_DOCUMENT && req->type != EDIT_DOCUMENT))
 		return NULL;
 
-	// Handle the edit document request
-	if (req->type == EDIT_DOCUMENT) {
-		// Add the request to the server's task queue
-		q_enqueue_request(s->tasks, (void *)req);
+	// Handle the get document request
+	if (req->type == GET_DOCUMENT) {
+		// Execute all the tasks in the queue
+		execute_queue(s);
 
-		// Allocate memory for the response from the server
-		response *res = calloc(1, sizeof(*res));
-		DIE(!res, "calloc response");
-
-		// Allocate memory for the response
-		res->server_response = malloc(MAX_RESPONSE_LENGTH);
-		DIE(!res->server_response, "malloc response");
-
-		// Allocate memory for the log message
-		res->server_log = malloc(MAX_LOG_LENGTH);
-		DIE(!res->server_log, "malloc log");
-
-		// Set the server's id
-		res->server_id = s->id;
-
-		// Get the corresponding response and log messages
-		sprintf(res->server_response, MSG_A, "EDIT", req->doc_name);
-		sprintf(res->server_log, LOG_LAZY_EXEC, s->tasks->size);
-
-		// Return the response
-		return res;
+		// Edit the document and return the response
+		return server_get_document(s, req->doc_name);
 	}
 
-	// Handle the get document request
+	// Handle the edit document request
+	
+	// Add the request to the server's task queue
+	q_enqueue_request(s->tasks, (void *)req);
 
-	// Execute all the tasks in the queue
-	execute_queue(s);
+	// Allocate memory for the response from the server
+	response *res = calloc(1, sizeof(*res));
+	DIE(!res, "calloc response");
 
-	// Edit the document and return the response
-	return server_get_document(s, req->doc_name);
+	// Allocate memory for the response
+	res->server_response = malloc(MAX_RESPONSE_LENGTH);
+	DIE(!res->server_response, "malloc response");
+
+	// Allocate memory for the log message
+	res->server_log = malloc(MAX_LOG_LENGTH);
+	DIE(!res->server_log, "malloc log");
+
+	// Set the server's id
+	res->server_id = s->id;
+
+	// Get the corresponding response and log messages
+	sprintf(res->server_response, MSG_A, "EDIT", req->doc_name);
+	sprintf(res->server_log, LOG_LAZY_EXEC, s->tasks->size);
+
+	// Return the response
+	return res;
 }
 
 void free_server(server **s)

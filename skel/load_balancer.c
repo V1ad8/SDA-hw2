@@ -56,10 +56,6 @@ load_balancer *init_load_balancer(bool enable_vnodes)
 
 void loader_add_server(load_balancer *main, int server_id, int cache_size)
 {
-	// Get the hash of the server and the slot where it should be placed
-	unsigned int s_hash = main->hash_function_servers(&server_id);
-	unsigned int slot = get_server(main, s_hash);
-
 	// Initialize the server and set its id
 	server *s = init_server(cache_size);
 	s->id = server_id;
@@ -74,10 +70,15 @@ void loader_add_server(load_balancer *main, int server_id, int cache_size)
 		return;
 	}
 
-	// Check if the server should be placed at the end of the list or at th beginning; only for servers placed between the last one and the first one
+	// Get the hash of the server and the slot where it should be placed
+	unsigned int s_hash = main->hash_function_servers(&server_id);
+	unsigned int slot = get_server(main, s_hash);
+
+	// Check if the server should be placed at the end of the list or at th beginning
+	// Only for servers placed between the last one and the first one
 	if (s_hash >
 		main->hash_function_servers(&((server *)main->servers->tail->data)->id))
-		slot = ll_get_size(main->servers) - slot;
+		slot = ll_get_size(main->servers);
 
 	// Get the next server
 	unsigned int next_slot = slot % ll_get_size(main->servers);
@@ -99,7 +100,7 @@ void loader_add_server(load_balancer *main, int server_id, int cache_size)
 			// Special case: if the next server is the first one and the key is before 0 on the ring
 			if (hash < s_hash ||
 				(next_s == main->servers->head->data &&
-				 hash > main->hash_function_servers(&next_s->id))) {
+				 hash >= main->hash_function_servers(&next_s->id))) {
 				// Add the key to the current server
 				ht_put(s->db, ((info_t *)curr->data)->key,
 					   strlen(((info_t *)curr->data)->key) + 1,
