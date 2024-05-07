@@ -39,4 +39,4 @@ clean:
 
 pack:
 	make clean
-	zip -FSr 315CA_UngureanuVlad-Marin_Homework2.zip README.md ../skel/ ../img/
+	zip -FSr 315CA_UngureanuVlad-Marin_Homework2.zip README.md ../skel/ ../img/ ../Makefile
